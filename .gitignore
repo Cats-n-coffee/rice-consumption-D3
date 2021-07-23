@@ -2,3 +2,7 @@ rice.xlsx
 node_modules
 notes.txt
 riceFormatted.json
+.cache
+.parcel-cache
+/static/countries.json
+/static/countries2.json

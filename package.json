@@ -4,12 +4,24 @@
   "description": "Rice consumption per capita 2011-2015",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "parcel src/index.html",
+    "build": "parcel build src/index.html"
   },
   "author": "Cats-n-Coffee",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "d3": "^7.0.0"
+  },
   "devDependencies": {
-    "convert-excel-to-json": "^1.7.0"
-  }
+    "convert-excel-to-json": "^1.7.0",
+    "parcel-bundler": "^1.12.5",
+    "parcel-plugin-static-files-copy": "^2.6.0"
+  },
+  "browserslist": [
+    "last 3 and_chr versions",
+    "last 3 chrome versions",
+    "last 3 opera versions",
+    "last 3 ios_saf versions",
+    "last 3 safari versions"
+  ]
 }
