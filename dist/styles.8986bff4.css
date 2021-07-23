@@ -1,2 +1,24 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#chart {
+    position: relative;
+}
+
+#tooltip {
+    position: absolute;
+    background: ghostwhite;
+    border: 1px solid grey;
+    border-radius: 4px;
+    padding: .5em;
+    font-size: .8rem;
+}
 
 /*# sourceMappingURL=/styles.8986bff4.css.map */

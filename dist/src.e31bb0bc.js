@@ -34371,20 +34371,23 @@ async function draw() {
             data: currentRice.data
           };
           break;
-        } // else if (countryInObj.name_long !== currentRice.country) {
-        //     mapData.features[i].properties = {...mapData.features[i].properties, data: null};
-        //     break;
-        // } 
-
+        }
       }
     }
 
     return mapData;
-  };
+  }; // Dataset and accessor
+
 
   const combinedData = await bindData();
   console.log(combinedData);
-  console.log(d3.schemeOranges[8]); // Map projection
+
+  const yearAccessor = d => {
+    return d.properties.data ? d.properties.data["2011"] : null;
+  }; // Create the color scale
+
+
+  const colorScale = d3.scaleQuantize().domain(d3.extent(combinedData.features, yearAccessor)).range(d3.schemeOranges[8]); // Map projection
 
   const mapProjection = d3.geoMercator().fitExtent([[dimensions.margin, dimensions.margin], [dimensions.width - dimensions.margin, dimensions.height - dimensions.margin]], combinedData); // Ensures the GeoJson will cover the available space
   //const projectedMap = projection(mapData)
@@ -34393,7 +34396,10 @@ async function draw() {
 
   const svg = d3.select('#chart').append('svg').attr('width', dimensions.width).attr('height', dimensions.height);
   const container = svg.append('g').attr('transform', `translate(${dimensions.margin}, ${dimensions.margin})`);
-  container.selectAll('path').data(combinedData.features).join('path').attr('d', pathGenerator).attr('fill', 'none').attr('stroke', 'black');
+  container.selectAll('path').data(combinedData.features).join('path').attr('d', pathGenerator).attr('fill', d => {
+    console.log('country', d.properties.name_long, 'data', d.properties.data);
+    return d.properties.data ? colorScale(d.properties.data["2011"]) : "#b3b3b3";
+  }).attr('stroke', 'black');
 }
 
 draw();
@@ -34425,7 +34431,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50469" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53844" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

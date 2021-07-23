@@ -27,19 +27,23 @@ async function draw() {
                     mapData.features[i].properties = {...mapData.features[i].properties, data: currentRice.data};
                     break;
                 }
-                // else if (countryInObj.name_long !== currentRice.country) {
-                //     mapData.features[i].properties = {...mapData.features[i].properties, data: null};
-                //     break;
-                // } 
            }
         }
        return mapData;
     }
     
+    // Dataset and accessor
     const combinedData = await bindData();
     console.log(combinedData)
+    const yearAccessor = d => {
+        return d.properties.data ? d.properties.data["2011"] : null;
+    };
 
-    console.log(d3.schemeOranges[8])
+    // Create the color scale
+    const colorScale = d3.scaleQuantize()
+        .domain(d3.extent(combinedData.features, yearAccessor))
+        .range(d3.schemeOranges[8])
+    
     // Map projection
     const mapProjection = d3.geoMercator().fitExtent([ 
             [dimensions.margin, dimensions.margin],
@@ -63,7 +67,10 @@ async function draw() {
         .data(combinedData.features)
         .join('path')
         .attr('d', pathGenerator)
-        .attr('fill', 'none')
+        .attr('fill', d => {
+            console.log('country', d.properties.name_long, 'data', d.properties.data)
+            return d.properties.data ? colorScale(d.properties.data["2011"]) : "#b3b3b3";
+        })
         .attr('stroke', 'black')
 
     
