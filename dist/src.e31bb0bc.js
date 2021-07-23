@@ -34346,28 +34346,54 @@ function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "functio
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 async function draw() {
-  // Fetch data
-  const mapData = await d3.json('https://raw.githubusercontent.com/AshKyd/geojson-regions/master/countries/50m/all.geojson');
-  const riceData = await d3.json('rice.json');
-  console.log(mapData);
-  console.log(riceData); // SVG and container dimensions
-
+  // SVG and container dimensions
   const dimensions = {
     width: 1300,
     height: 1200,
     margin: 20
   };
   dimensions.containerWidth = dimensions.width - dimensions.margin * 2;
-  dimensions.containerHeight = dimensions.height - dimensions.margin * 2; // Map projection
+  dimensions.containerHeight = dimensions.height - dimensions.margin * 2; // Bind the 2 datasets
 
-  const mapProjection = d3.geoMercator().fitExtent([[dimensions.margin, dimensions.margin], [dimensions.width - dimensions.margin, dimensions.height - dimensions.margin]], mapData); // Ensures the GeoJson will cover the available space
+  const bindData = async function () {
+    // Fetch the data
+    const riceData = await d3.json('rice.json');
+    const mapData = await d3.json('https://raw.githubusercontent.com/AshKyd/geojson-regions/master/countries/50m/all.geojson');
+
+    for (let j = 0; j < riceData.length; j += 1) {
+      let currentRice = riceData[j];
+
+      for (let i = 0; i < mapData.features.length; i += 1) {
+        var countryInObj = mapData.features[i].properties;
+
+        if (countryInObj.name_long === currentRice.country) {
+          mapData.features[i].properties = { ...mapData.features[i].properties,
+            data: currentRice.data
+          };
+          break;
+        } // else if (countryInObj.name_long !== currentRice.country) {
+        //     mapData.features[i].properties = {...mapData.features[i].properties, data: null};
+        //     break;
+        // } 
+
+      }
+    }
+
+    return mapData;
+  };
+
+  const combinedData = await bindData();
+  console.log(combinedData);
+  console.log(d3.schemeOranges[8]); // Map projection
+
+  const mapProjection = d3.geoMercator().fitExtent([[dimensions.margin, dimensions.margin], [dimensions.width - dimensions.margin, dimensions.height - dimensions.margin]], combinedData); // Ensures the GeoJson will cover the available space
   //const projectedMap = projection(mapData)
 
   const pathGenerator = d3.geoPath().projection(mapProjection); // Draw images
 
   const svg = d3.select('#chart').append('svg').attr('width', dimensions.width).attr('height', dimensions.height);
   const container = svg.append('g').attr('transform', `translate(${dimensions.margin}, ${dimensions.margin})`);
-  container.selectAll('path').data(mapData.features).join('path').attr('d', pathGenerator).attr('fill', 'none').attr('stroke', 'black');
+  container.selectAll('path').data(combinedData.features).join('path').attr('d', pathGenerator).attr('fill', 'none').attr('stroke', 'black');
 }
 
 draw();
@@ -34399,7 +34425,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53139" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50469" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
