@@ -13,10 +13,12 @@ body {
 }
 
 #tooltip {
+    display: none;
     position: absolute;
     background: ghostwhite;
     border: 1px solid grey;
     border-radius: 4px;
     padding: .5em;
     font-size: .8rem;
+    z-index: 3;
 }

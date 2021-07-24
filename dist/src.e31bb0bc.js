@@ -34387,19 +34387,35 @@ async function draw() {
   }; // Create the color scale
 
 
+  const colorSchema = [];
   const colorScale = d3.scaleQuantize().domain(d3.extent(combinedData.features, yearAccessor)).range(d3.schemeOranges[8]); // Map projection
 
   const mapProjection = d3.geoMercator().fitExtent([[dimensions.margin, dimensions.margin], [dimensions.width - dimensions.margin, dimensions.height - dimensions.margin]], combinedData); // Ensures the GeoJson will cover the available space
   //const projectedMap = projection(mapData)
 
-  const pathGenerator = d3.geoPath().projection(mapProjection); // Draw images
+  const pathGenerator = d3.geoPath().projection(mapProjection); // Tooltip
+
+  const tooltip = d3.select('#tooltip'); // Draw images
 
   const svg = d3.select('#chart').append('svg').attr('width', dimensions.width).attr('height', dimensions.height);
   const container = svg.append('g').attr('transform', `translate(${dimensions.margin}, ${dimensions.margin})`);
   container.selectAll('path').data(combinedData.features).join('path').attr('d', pathGenerator).attr('fill', d => {
-    console.log('country', d.properties.name_long, 'data', d.properties.data);
+    //console.log('country', d.properties.name_long, 'data', d.properties.data)
     return d.properties.data ? colorScale(d.properties.data["2011"]) : "#b3b3b3";
-  }).attr('stroke', 'black');
+  }).attr('stroke', 'black').on('mouseenter', function (event, datum) {
+    tooltip.style('display', 'block').style('top', event.layerY + 'px').style('left', event.layerX + 'px');
+    tooltip.select('.tooltip-country span').text(datum.properties.name_long);
+    tooltip.select('.tooltip-quantity span').text(() => {
+      if (datum.properties.data) {
+        if (datum.properties.data["2011"] === "...") return "No data available";else return datum.properties.data["2011"] + ' Kg';
+      } else {
+        return "No data available";
+      }
+    });
+    console.log(event);
+  }).on('mouseleave', function (event, datum) {
+    tooltip.style('display', 'none');
+  });
 }
 
 draw();
@@ -34431,7 +34447,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53844" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54646" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
