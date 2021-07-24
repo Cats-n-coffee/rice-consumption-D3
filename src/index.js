@@ -65,7 +65,7 @@ async function draw() {
         .attr('height', dimensions.height)
 
     const container = svg.append('g')
-        .attr('transform', `translate(${dimensions.margin}, ${dimensions.margin})`)
+        .attr('transform', `translate(${dimensions.margin}, ${dimensions.margin + 15})`)
     
     container.selectAll('path')
         .data(combinedData.features)
@@ -105,7 +105,36 @@ async function draw() {
         .on('mouseleave', function(event, datum){
             tooltip.style('display', 'none');
         })
+
+    // Legend
+    const legendGroup = svg.append('g')
+        .attr('transform', `translate(${(dimensions.width / 4) * 2.5})`)
+
+    // Grey rectangle and text    
+    const legendNoData = legendGroup.append('g')
+        legendNoData.append('rect')
+            .attr('x', 0)
+            .attr('y', 0)
+            .attr('width', 40)
+            .attr('height', 20)
+            .attr('fill', '#b3b3b3')
+        legendNoData.append('text')
+            .attr('x', 50)
+            .attr('y', 15)
+            .attr('fill', 'black')
+            .text('No data available')
+            .style('font-size', '.8rem')
     
+    // All colors rectangles and text
+    const legendData = legendGroup.append('g')
+        legendData.selectAll('rect')
+            .data(colorSchema)
+            .join('rect')
+            .attr('x', (d, i) => (i) * 40)
+            .attr('y', 30)
+            .attr('width', 40)
+            .attr('height', 20)
+            .attr('fill', d => d)
 }
 
 draw();

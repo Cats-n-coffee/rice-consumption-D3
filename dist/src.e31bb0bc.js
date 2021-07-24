@@ -34398,7 +34398,7 @@ async function draw() {
   const tooltip = d3.select('#tooltip'); // Draw images
 
   const svg = d3.select('#chart').append('svg').attr('width', dimensions.width).attr('height', dimensions.height);
-  const container = svg.append('g').attr('transform', `translate(${dimensions.margin}, ${dimensions.margin})`);
+  const container = svg.append('g').attr('transform', `translate(${dimensions.margin}, ${dimensions.margin + 15})`);
   container.selectAll('path').data(combinedData.features).join('path').attr('d', pathGenerator).attr('fill', d => {
     //console.log('country', d.properties.name_long, 'data', d.properties.data)
     if (d.properties.data) {
@@ -34418,7 +34418,16 @@ async function draw() {
     }); //console.log(event)
   }).on('mouseleave', function (event, datum) {
     tooltip.style('display', 'none');
-  });
+  }); // Legend
+
+  const legendGroup = svg.append('g').attr('transform', `translate(${dimensions.width / 4 * 2.5})`); // Grey rectangle and text    
+
+  const legendNoData = legendGroup.append('g');
+  legendNoData.append('rect').attr('x', 0).attr('y', 0).attr('width', 40).attr('height', 20).attr('fill', '#b3b3b3');
+  legendNoData.append('text').attr('x', 50).attr('y', 15).attr('fill', 'black').text('No data available').style('font-size', '.8rem'); // All colors rectangles and text
+
+  const legendData = legendGroup.append('g');
+  legendData.selectAll('rect').data(colorSchema).join('rect').attr('x', (d, i) => i * 40).attr('y', 30).attr('width', 40).attr('height', 20).attr('fill', d => d);
 }
 
 draw();

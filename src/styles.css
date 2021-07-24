@@ -6,10 +6,36 @@
 
 body {
     font-family: Arial, Helvetica, sans-serif;
+    padding: 0 3em;
+}
+
+h1 {
+    text-align: center;
+    padding: 1em 0;
+}
+h2 {
+   font-size: 1.1rem;
+   text-align: center;
+   font-weight: 400;
+   padding: 0 0 2em 0;
+   border-bottom: 1px solid rgb(190, 190, 190);
+}
+
+#select-years {
+    display: flex;
+    flex-direction: column;
+    width: 150px;
+    position: absolute;
+}
+
+#select-years label {
+    padding: 0 0 .5em 0;
+    font-size: .9rem;
 }
 
 #chart {
     position: relative;
+    margin: 2em 0 0 0;
 }
 
 #tooltip {
