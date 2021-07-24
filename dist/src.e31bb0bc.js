@@ -34387,8 +34387,8 @@ async function draw() {
   }; // Create the color scale
 
 
-  const colorSchema = [];
-  const colorScale = d3.scaleQuantize().domain(d3.extent(combinedData.features, yearAccessor)).range(d3.schemeOranges[8]); // Map projection
+  const colorSchema = ["#ffefe8", "#ffcfba", "#fcb190", "#ff9a6e", "#fc8956", "#fc7a42", "#fc5d17", "#bf3e06", "#912e03", "#611e01"];
+  const colorScale = d3.scaleQuantize().domain(d3.extent(combinedData.features, yearAccessor)).range(colorSchema); // Map projection
 
   const mapProjection = d3.geoMercator().fitExtent([[dimensions.margin, dimensions.margin], [dimensions.width - dimensions.margin, dimensions.height - dimensions.margin]], combinedData); // Ensures the GeoJson will cover the available space
   //const projectedMap = projection(mapData)
@@ -34401,7 +34401,11 @@ async function draw() {
   const container = svg.append('g').attr('transform', `translate(${dimensions.margin}, ${dimensions.margin})`);
   container.selectAll('path').data(combinedData.features).join('path').attr('d', pathGenerator).attr('fill', d => {
     //console.log('country', d.properties.name_long, 'data', d.properties.data)
-    return d.properties.data ? colorScale(d.properties.data["2011"]) : "#b3b3b3";
+    if (d.properties.data) {
+      if (d.properties.data["2011"] === "...") return "#b3b3b3";else return colorScale(d.properties.data["2011"]);
+    } else {
+      return "#b3b3b3";
+    }
   }).attr('stroke', 'black').on('mouseenter', function (event, datum) {
     tooltip.style('display', 'block').style('top', event.layerY + 'px').style('left', event.layerX + 'px');
     tooltip.select('.tooltip-country span').text(datum.properties.name_long);
@@ -34411,8 +34415,7 @@ async function draw() {
       } else {
         return "No data available";
       }
-    });
-    console.log(event);
+    }); //console.log(event)
   }).on('mouseleave', function (event, datum) {
     tooltip.style('display', 'none');
   });
@@ -34447,7 +34450,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54646" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49505" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

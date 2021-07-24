@@ -40,10 +40,10 @@ async function draw() {
     };
 
     // Create the color scale
-    const colorSchema = [];
+    const colorSchema = ["#ffefe8", "#ffcfba", "#fcb190", "#ff9a6e", "#fc8956", "#fc7a42", "#fc5d17", "#bf3e06", "#912e03", "#611e01"];
     const colorScale = d3.scaleQuantize()
         .domain(d3.extent(combinedData.features, yearAccessor))
-        .range(d3.schemeOranges[8])
+        .range(colorSchema)
     
     // Map projection
     const mapProjection = d3.geoMercator().fitExtent([ 
@@ -73,7 +73,13 @@ async function draw() {
         .attr('d', pathGenerator)
         .attr('fill', d => {
             //console.log('country', d.properties.name_long, 'data', d.properties.data)
-            return d.properties.data ? colorScale(d.properties.data["2011"]) : "#b3b3b3";
+            if (d.properties.data) {
+                if (d.properties.data["2011"] === "...") return "#b3b3b3";
+                else return colorScale(d.properties.data["2011"]);
+            }
+            else {
+                return "#b3b3b3";
+            } 
         })
         .attr('stroke', 'black')
         .on('mouseenter', function(event, datum){
@@ -94,7 +100,7 @@ async function draw() {
                         return "No data available";
                     } 
                 })
-console.log(event)
+//console.log(event)
         })
         .on('mouseleave', function(event, datum){
             tooltip.style('display', 'none');
