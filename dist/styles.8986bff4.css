@@ -1,4 +1,4 @@
-* {
+*, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -21,18 +21,6 @@ h2 {
    border-bottom: 1px solid rgb(190, 190, 190);
 }
 
-#select-years {
-    display: flex;
-    flex-direction: column;
-    width: 150px;
-    position: absolute;
-}
-
-#select-years label {
-    padding: 0 0 .5em 0;
-    font-size: .9rem;
-}
-
 #chart {
     position: relative;
     margin: 2em 0 0 0;
@@ -47,6 +35,36 @@ h2 {
     padding: .5em;
     font-size: .8rem;
     z-index: 3;
+}
+
+/* ------------ Select input styling ------------- */
+
+#select-years {
+    display: flex;
+    flex-direction: column;
+    width: 150px;
+    position: absolute;
+}
+
+#select-years label {
+    padding: 0 0 .5em 0;
+    font-size: .9rem;
+}
+
+.select-style {
+    position: relative;
+    width: 150px;
+}
+
+#years {
+   
+    background: rgb(201, 74, 1);
+    border: none;
+    color: white;
+    padding: .3em .3em .3em 1.1em;
+    width: 100%;
+    /* line-height: inherit; */
+    margin: 0;
 }
 
 /*# sourceMappingURL=/styles.8986bff4.css.map */
