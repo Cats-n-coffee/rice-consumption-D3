@@ -34388,10 +34388,11 @@ async function draw() {
 
 
   const colorSchema = ["#ffefe8", "#ffcfba", "#fcb190", "#ff9a6e", "#fc8956", "#fc7a42", "#fc5d17", "#bf3e06", "#912e03", "#611e01"];
-  const colorScale = d3.scaleQuantize().domain(d3.extent(combinedData.features, yearAccessor)).range(colorSchema); // Map projection
+  const colorScale = d3.scaleQuantize().domain(d3.extent(combinedData.features, yearAccessor)).range(colorSchema); // Create linear scale for legend
+
+  const legendScale = d3.scaleLinear().domain(d3.extent(combinedData.features, yearAccessor)).range([0, 400]); // Map projection
 
   const mapProjection = d3.geoMercator().fitExtent([[dimensions.margin, dimensions.margin], [dimensions.width - dimensions.margin, dimensions.height - dimensions.margin]], combinedData); // Ensures the GeoJson will cover the available space
-  //const projectedMap = projection(mapData)
 
   const pathGenerator = d3.geoPath().projection(mapProjection); // Tooltip
 
@@ -34428,6 +34429,11 @@ async function draw() {
 
   const legendData = legendGroup.append('g');
   legendData.selectAll('rect').data(colorSchema).join('rect').attr('x', (d, i) => i * 40).attr('y', 30).attr('width', 40).attr('height', 20).attr('fill', d => d);
+  const colorThresholds = colorScale.thresholds().map(d => Math.round(d));
+  colorThresholds.push(colorThresholds[colorThresholds.length - 1] + 30);
+  colorThresholds.unshift(1);
+  console.log(colorThresholds);
+  legendData.selectAll('text').data(colorThresholds).join('text').attr('x', (d, i) => i * 40 - 5).attr('y', 65).attr('fill', 'black').text(d => d).style('font-size', '.8rem');
 }
 
 draw();
