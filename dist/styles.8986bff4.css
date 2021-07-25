@@ -23,7 +23,9 @@ h2 {
 
 #chart {
     position: relative;
-    margin: 1em 0 0 0;
+    margin: 1em auto 0 auto;
+    display: flex; 
+    justify-content: center;
 }
 
 #tooltip {
@@ -44,6 +46,7 @@ h2 {
     flex-direction: column;
     width: 150px;
     position: absolute;
+    left: 0;
 }
 
 #select-years label {
