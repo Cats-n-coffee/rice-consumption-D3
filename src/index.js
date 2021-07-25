@@ -52,14 +52,37 @@ async function draw() {
     // Tooltip
     const tooltip = d3.select('#tooltip');
 
+    // ----- Legend
+    const legendGroup = svg.append('g')
+        .attr('transform', `translate(${(dimensions.width / 4) * 2.5})`)
+
+        const axis = legendGroup.append('g')
+        .style('transform', 'translateY(65px)')
+
+    // Legend: Grey rectangle and text    
+    const legendNoData = legendGroup.append('g')
+        legendNoData.append('rect')
+            .attr('x', 0)
+            .attr('y', 0)
+            .attr('width', 40)
+            .attr('height', 20)
+            .attr('fill', '#b3b3b3')
+        legendNoData.append('text')
+            .attr('x', 50)
+            .attr('y', 15)
+            .attr('fill', 'black')
+            .text('No data available')
+            .style('font-size', '.8rem')
+
+    const legendData = legendGroup.append('g')
 
     // ------------------------ Function to create chart
     async function choropleth(selectedYear) {
         console.log(selectedYear)
         
         // One combined dataset
-    const combinedData = await bindData();
-        console.log(combinedData)
+        const combinedData = await bindData();
+ 
         // Accessor
         const yearAccessor = d => {
             return d.properties.data ? d.properties.data[selectedYear] : null;
@@ -108,7 +131,7 @@ async function draw() {
                     .text(() => {
                         if (datum.properties.data) {
                             if (datum.properties.data[selectedYear] === "...") return "No data available";
-                            else return datum.properties.data[selectedYear] + ' Kg';
+                            else return datum.properties.data[selectedYear].toFixed(2) + ' Kg';
                         }
                         else {
                             return "No data available";
@@ -120,27 +143,16 @@ async function draw() {
                 tooltip.style('display', 'none');
             })
 
-        // ----- Legend
-        const legendGroup = svg.append('g')
-            .attr('transform', `translate(${(dimensions.width / 4) * 2.5})`)
+        // ----- Transitions
+        const exitTransition = d3.transition().duration(500);
+        const updateTransition = exitTransition.transition().duration(500);
 
-        // Legend: Grey rectangle and text    
-        const legendNoData = legendGroup.append('g')
-            legendNoData.append('rect')
-                .attr('x', 0)
-                .attr('y', 0)
-                .attr('width', 40)
-                .attr('height', 20)
-                .attr('fill', '#b3b3b3')
-            legendNoData.append('text')
-                .attr('x', 50)
-                .attr('y', 15)
-                .attr('fill', 'black')
-                .text('No data available')
-                .style('font-size', '.8rem')
+        
+
+        
         
         // Legend: All colors rectangles and text
-        const legendData = legendGroup.append('g')
+        
             legendData.selectAll('rect')
                 .data(colorSchema)
                 .join('rect')
@@ -151,13 +163,26 @@ async function draw() {
                 .attr('fill', d => d)
 
         // Legend: get thresholds from colorScale
-        const colorThresholds = colorScale.thresholds().map(d => Math.round(d));
+        let colorThresholds = colorScale.thresholds().map(d => Math.round(d));
         colorThresholds.push(colorThresholds[colorThresholds.length - 1] + 30)
         colorThresholds.unshift(1);
+
             legendData.selectAll('text')
-            .remove()
                 .data(colorThresholds)
-                .join('text')
+                .join(
+                    (enter) => enter.append('text')
+                        .attr('x', (d, i) => i * 40 - 5)
+                        .attr('y', 65)
+                        //.attr('fill', 'black')
+                        .text(d => d)
+                        .style('font-size', '.8rem')
+                        .selection(),
+                    (update) => update // https://stackoverflow.com/questions/67131696/how-to-put-dynamic-data-text-inside-rectangle-in-d3
+                    .text(d => d)    
+                    .selection(),
+                    (exit) => exit.remove()// https://www.d3indepth.com/enterexit/
+                ) // https://github.com/d3/d3-selection/blob/v1.4.0/README.md#selection_join
+                .transition(updateTransition)
                 .attr('x', (d, i) => i * 40 - 5)
                 .attr('y', 65)
                 .attr('fill', 'black')
