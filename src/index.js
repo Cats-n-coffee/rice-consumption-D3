@@ -118,9 +118,9 @@ async function draw() {
             .attr('stroke', 'black')
             .on('mousemove', function(event, datum){ 
                 tooltip.style('display', 'block')
-                    .style('top', event.layerY + 130 +'px')
+                    .style('top', event.layerY + 70 +'px') // Be careful with mousemove event, if tooltip is under the cursor(?), it will NOT display
                     .style('left', event.layerX + 'px')
-console.log(datum)
+
                 tooltip.select('.tooltip-country span')
                     .text(datum.properties.name_long)
 
