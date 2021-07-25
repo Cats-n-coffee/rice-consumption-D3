@@ -1,6 +1,14 @@
 import * as d3 from 'd3';
 import 'regenerator-runtime/runtime';
 
+document.addEventListener('DOMContentLoaded', () => {
+    const spinnner = document.getElementById('spinner-container');
+    setTimeout(() => {
+        spinnner.style.display = 'none';
+        
+    }, 2000)
+})
+
 async function draw() {
     // Get the selected year
     d3.select('#years').on('change', function (event) {
@@ -13,7 +21,7 @@ async function draw() {
     // SVG and container dimensions
     const dimensions = {
         width: 1300,
-        height: 1200,
+        height: 1100,
         margin: 20
     }
 
@@ -118,8 +126,8 @@ async function draw() {
             .attr('stroke', 'black')
             .on('mousemove', function(event, datum){ 
                 tooltip.style('display', 'block')
-                    .style('top', event.layerY + 70 +'px') // Be careful with mousemove event, if tooltip is under the cursor(?), it will NOT display
-                    .style('left', event.layerX + 'px')
+                    .style('top', event.clientY - 80 +'px') // Be careful with mousemove event, if tooltip is under the cursor(?), it will NOT display
+                    .style('left', event.clientX - 40 + 'px')
 
                 tooltip.select('.tooltip-country span')
                     .text(datum.properties.name_long)

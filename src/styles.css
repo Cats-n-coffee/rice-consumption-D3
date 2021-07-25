@@ -11,7 +11,7 @@ body {
 
 #main-container {
     margin: 0 auto;
-    width: 1500px;
+    width: 1300px;
     overflow-x: auto;
 }
 
@@ -73,4 +73,54 @@ h2 {
     padding: .3em .3em .3em 1.1em;
     width: 100%;
     margin: 0;
+}
+
+/* ------------------------ Spinner ------------------------ */
+#spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: white;
+    position: absolute;
+    padding: 15em 0;
+    margin: 0;
+}
+
+.bubble {
+    width: 15px;
+    height: 15px;
+    background: white;
+    border-radius: 50%;
+}
+
+.bubble:not(:first-child) {
+    margin: 0 0 0 1em;
+}
+
+.bubble:nth-child(1) { animation: spinningOne 1.5s linear infinite alternate; }
+.bubble:nth-child(2) { animation: spinningTwo 1.5s linear infinite alternate; }
+.bubble:nth-child(3) { animation: spinningThree 1.5s linear infinite alternate; }
+
+@keyframes spinningOne {
+    0% { background: rgb(146, 66, 0); transform: scale(1.1);}
+    50% { background: rgb(252, 122, 16); transform: scale(0.9);}
+    100% { background: rgb(252, 171, 105); transform: scale(1);}
+}
+
+@keyframes spinningTwo {
+    0% { background: rgb(252, 171, 105); transform: scale(1);}
+    50% { background: rgb(146, 66, 0); transform: scale(1.1);}
+    100% { background: rgb(252, 122, 16); transform: scale(0.9);}
+}
+
+@keyframes spinningThree {
+    0% { background: rgb(252, 122, 16); transform: scale(0.9);}
+    50% { background: rgb(252, 171, 105); transform: scale(1);}
+    100% { background: rgb(146, 66, 0); transform: scale(1.1);}
 }
