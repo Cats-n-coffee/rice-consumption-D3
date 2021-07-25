@@ -1,15 +1,15 @@
 import * as d3 from 'd3';
-import { color } from 'd3';
 import 'regenerator-runtime/runtime';
 
 async function draw() {
     // Get the selected year
     d3.select('#years').on('change', function (event) {
         event.preventDefault();
-        choropleth(this.value);
+        choropleth(this.value); // Changes the map and legend text with the selected year
     })
 
-    choropleth("2011")
+    choropleth("2011") // Default year 
+
     // SVG and container dimensions
     const dimensions = {
         width: 1300,
@@ -30,7 +30,7 @@ async function draw() {
             let currentRice = riceData[j];
             for (let i = 0; i < mapData.features.length; i += 1) {
                     var countryInObj = mapData.features[i].properties;
-
+                    // Check for matching country names, and add rice data to the properties of the map
                     if (countryInObj.name_long === currentRice.country) {
                         mapData.features[i].properties = {...mapData.features[i].properties, data: currentRice.data};
                         break;
@@ -40,6 +40,7 @@ async function draw() {
         return mapData;
     }
    
+    // ---------- Elements
     // Draw images
     const svg = d3.select('#chart')
         .append('svg')
@@ -52,12 +53,9 @@ async function draw() {
     // Tooltip
     const tooltip = d3.select('#tooltip');
 
-    // ----- Legend
+    // Legend
     const legendGroup = svg.append('g')
-        .attr('transform', `translate(${(dimensions.width / 4) * 2.5})`)
-
-        const axis = legendGroup.append('g')
-        .style('transform', 'translateY(65px)')
+        .attr('transform', `translate(${(dimensions.width / 4) * 2.7})`)
 
     // Legend: Grey rectangle and text    
     const legendNoData = legendGroup.append('g')
@@ -74,11 +72,11 @@ async function draw() {
             .text('No data available')
             .style('font-size', '.8rem')
 
+    // Legend: group for colors and text
     const legendData = legendGroup.append('g')
 
     // ------------------------ Function to create chart
     async function choropleth(selectedYear) {
-        console.log(selectedYear)
         
         // One combined dataset
         const combinedData = await bindData();
@@ -109,8 +107,7 @@ async function draw() {
             .join('path')
             .attr('d', pathGenerator)
             .attr('fill', d => {
-                //console.log('country', d.properties.name_long, 'data', d.properties.data)
-                if (d.properties.data) {
+                if (d.properties.data) { // 'fill' attribute uses the colorScale on the rice data
                     if (d.properties.data[selectedYear] === "...") return "#b3b3b3";
                     else return colorScale(d.properties.data[selectedYear]);
                 }
@@ -119,11 +116,11 @@ async function draw() {
                 } 
             })
             .attr('stroke', 'black')
-            .on('mousemove', function(event, datum){
+            .on('mousemove', function(event, datum){ 
                 tooltip.style('display', 'block')
                     .style('top', event.layerY + 130 +'px')
                     .style('left', event.layerX + 'px')
-
+console.log(datum)
                 tooltip.select('.tooltip-country span')
                     .text(datum.properties.name_long)
 
@@ -137,57 +134,46 @@ async function draw() {
                             return "No data available";
                         } 
                     })
-    //console.log(event)
             })
             .on('mouseleave', function(event, datum){
                 tooltip.style('display', 'none');
             })
 
-        // ----- Transitions
-        const exitTransition = d3.transition().duration(500);
-        const updateTransition = exitTransition.transition().duration(500);
-
-        
-
-        
-        
-        // Legend: All colors rectangles and text
-        
-            legendData.selectAll('rect')
-                .data(colorSchema)
-                .join('rect')
-                .attr('x', (d, i) => i * 40)
-                .attr('y', 30)
-                .attr('width', 40)
-                .attr('height', 20)
-                .attr('fill', d => d)
+        // Legend: All colors rectangles 
+        legendData.selectAll('rect')
+            .data(colorSchema) // Uses the array of colors 
+            .join('rect')
+            .attr('x', (d, i) => i * 40)
+            .attr('y', 30)
+            .attr('width', 40)
+            .attr('height', 20)
+            .attr('fill', d => d)
 
         // Legend: get thresholds from colorScale
         let colorThresholds = colorScale.thresholds().map(d => Math.round(d));
-        colorThresholds.push(colorThresholds[colorThresholds.length - 1] + 30)
-        colorThresholds.unshift(1);
+        colorThresholds.push(colorThresholds[colorThresholds.length - 1] + 30) // Last number on the legend
+        colorThresholds.unshift(1); // First number on the legend
 
-            legendData.selectAll('text')
-                .data(colorThresholds)
-                .join(
-                    (enter) => enter.append('text')
-                        .attr('x', (d, i) => i * 40 - 5)
-                        .attr('y', 65)
-                        //.attr('fill', 'black')
-                        .text(d => d)
-                        .style('font-size', '.8rem')
-                        .selection(),
-                    (update) => update // https://stackoverflow.com/questions/67131696/how-to-put-dynamic-data-text-inside-rectangle-in-d3
-                    .text(d => d)    
+        // Legend: Text(number) for each color (threshold) 
+        legendData.selectAll('text')
+            .data(colorThresholds)
+            .join( 
+                (enter) => enter.append('text') // appends the text (thresholds)
+                    .attr('x', (d, i) => i * 40 - 5)
+                    .attr('y', 65)
+                    .text(d => d)
+                    .style('font-size', '.8rem')
                     .selection(),
-                    (exit) => exit.remove()// https://www.d3indepth.com/enterexit/
-                ) // https://github.com/d3/d3-selection/blob/v1.4.0/README.md#selection_join
-                .transition(updateTransition)
-                .attr('x', (d, i) => i * 40 - 5)
-                .attr('y', 65)
-                .attr('fill', 'black')
-                .text(d => d)
-                .style('font-size', '.8rem')
+                (update) => update 
+                .text(d => d) // Updates with the new text (thresholds) when the year changes
+                .selection(),
+                (exit) => exit.remove() // Removes elements that are different from previous thresholds 
+            ) 
+            .attr('x', (d, i) => i * 40 - 5)
+            .attr('y', 65)
+            .attr('fill', 'black')
+            .text(d => d)
+            .style('font-size', '.8rem')
     }
 }
 

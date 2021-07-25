@@ -14,11 +14,11 @@ To make sure the map could be drawn, a GeoJson format was the easiest and only w
 
 ## Drawing the map
 
+
 ## Adding the Rice consumption data
 
 ## References
 
 https://observablehq.com/@floledermann/drawing-maps-from-geodata-in-d3
 https://raw.githubusercontent.com/AshKyd/geojson-regions/master/countries/50m/all.geojson
-https://bost.ocks.org/mike/join/
 https://observablehq.com/@thetylerwolf/day-18-join-enter-update-exit
