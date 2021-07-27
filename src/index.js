@@ -108,45 +108,93 @@ async function draw() {
             combinedData)// Ensures the GeoJson will cover the available space
 
         const pathGenerator = d3.geoPath().projection(mapProjection)
+
+        // Transitions
+        const exitTransition = d3.transition().duration(500);
+        const updateTransition = exitTransition.transition().duration(500);
         
         // Draw the map 
         container.selectAll('path')
             .data(combinedData.features)
-            .join('path')
+            .join(
+                (enter) => enter.append('path')
+                    .attr('d', pathGenerator)
+                    .attr('stroke', 'black')
+                    .on('mousemove', function(event, datum){ 
+                        tooltip.style('display', 'block')
+                            .style('top', event.clientY - 80 +'px') // Be careful with mousemove event, if tooltip is under the cursor(?), it will NOT display
+                            .style('left', event.clientX - 40 + 'px')
+        
+                        tooltip.select('.tooltip-country span')
+                            .text(datum.properties.name_long)
+        
+                        tooltip.select('.tooltip-quantity span')
+                            .text(() => {
+                                if (datum.properties.data) {
+                                    if (datum.properties.data[selectedYear] === "...") return "No data available";
+                                    else return datum.properties.data[selectedYear].toFixed(2) + ' Kg';
+                                }
+                                else {
+                                    return "No data available";
+                                } 
+                            })
+                    })
+                    .on('mouseleave', function(event, datum){
+                        tooltip.style('display', 'none');
+                    }),
+                (update) => update.attr('fill', function(d) {
+                        if (this.getAttribute("data-color") === "#b3b3b3" || this.getAttribute("data-color") === colorScale(d.properties.data[selectedYear])) {
+                            if (d.properties.data) return colorScale(d.properties.data[selectedYear]);
+                            else return "#b3b3b3";
+                        } 
+                        else return 'green'; // On update, if the color is the same as before, we render the same color, otherwise we transition to green first
+                    })
+                    .on('mousemove', function(event, datum){ 
+                        tooltip.style('display', 'block')
+                            .style('top', event.clientY - 80 +'px') // Be careful with mousemove event, if tooltip is under the cursor(?), it will NOT display
+                            .style('left', event.clientX - 40 + 'px')
+        
+                        tooltip.select('.tooltip-country span')
+                            .text(datum.properties.name_long)
+        
+                        tooltip.select('.tooltip-quantity span')
+                            .text(() => {
+                                if (datum.properties.data) {
+                                    if (datum.properties.data[selectedYear] === "...") return "No data available";
+                                    else return datum.properties.data[selectedYear].toFixed(2) + ' Kg';
+                                }
+                                else {
+                                    return "No data available";
+                                } 
+                            })
+                    })
+                    .on('mouseleave', function(event, datum){
+                        tooltip.style('display', 'none');
+                    }),
+                (exit) => exit//.attr('fill', 'green')
+                    .transition(exitTransition)
+                    .remove()
+            )
+            .transition(updateTransition)
             .attr('d', pathGenerator)
-            .attr('fill', d => {
+            .attr('fill', function(d) { // Sets the color attribute, used in the update transition, and set the color itself to the element
                 if (d.properties.data) { // 'fill' attribute uses the colorScale on the rice data
-                    if (d.properties.data[selectedYear] === "...") return "#b3b3b3";
-                    else return colorScale(d.properties.data[selectedYear]);
+                    if (d.properties.data[selectedYear] === "...") {
+                        this.setAttribute("data-color", "#b3b3b3")
+                        return "#b3b3b3";
+                    }
+                    else {
+                        this.setAttribute("data-color", colorScale(d.properties.data[selectedYear]))
+                        return colorScale(d.properties.data[selectedYear]);
+                    }
                 }
                 else {
+                    this.setAttribute("data-color", "#b3b3b3")
                     return "#b3b3b3";
                 } 
             })
-            .attr('stroke', 'black')
-            .on('mousemove', function(event, datum){ 
-                tooltip.style('display', 'block')
-                    .style('top', event.clientY - 80 +'px') // Be careful with mousemove event, if tooltip is under the cursor(?), it will NOT display
-                    .style('left', event.clientX - 40 + 'px')
-
-                tooltip.select('.tooltip-country span')
-                    .text(datum.properties.name_long)
-
-                tooltip.select('.tooltip-quantity span')
-                    .text(() => {
-                        if (datum.properties.data) {
-                            if (datum.properties.data[selectedYear] === "...") return "No data available";
-                            else return datum.properties.data[selectedYear].toFixed(2) + ' Kg';
-                        }
-                        else {
-                            return "No data available";
-                        } 
-                    })
-            })
-            .on('mouseleave', function(event, datum){
-                tooltip.style('display', 'none');
-            })
-
+            .attr('stroke', 'black') 
+            
         // Legend: All colors rectangles 
         legendData.selectAll('rect')
             .data(colorSchema) // Uses the array of colors 
