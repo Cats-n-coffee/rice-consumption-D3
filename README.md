@@ -33,6 +33,6 @@ All the 'parent' DOM elements have to be kept outside of this `choropleth` funct
 
 ## References
 
-https://observablehq.com/@floledermann/drawing-maps-from-geodata-in-d3
-https://raw.githubusercontent.com/AshKyd/geojson-regions/master/countries/50m/all.geojson
+https://observablehq.com/@floledermann/drawing-maps-from-geodata-in-d3 <br>
+https://raw.githubusercontent.com/AshKyd/geojson-regions/master/countries/50m/all.geojson <br>
 https://observablehq.com/@thetylerwolf/day-18-join-enter-update-exit

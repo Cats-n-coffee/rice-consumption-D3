@@ -105,7 +105,7 @@ async function draw() {
                 [dimensions.margin, dimensions.margin],
                 [dimensions.width - dimensions.margin, dimensions.height - dimensions.margin]
             ],
-            combinedData)// Ensures the GeoJson will cover the available space
+            combinedData)// FitExtent ensures the GeoJson will cover the available space
 
         const pathGenerator = d3.geoPath().projection(mapProjection)
 
@@ -142,7 +142,8 @@ async function draw() {
                     .on('mouseleave', function(event, datum){
                         tooltip.style('display', 'none');
                     }),
-                (update) => update.attr('fill', function(d) {
+                (update) => update
+                    .attr('fill', function(d) {
                         if (this.getAttribute("data-color") === "#b3b3b3" || this.getAttribute("data-color") === colorScale(d.properties.data[selectedYear])) {
                             if (d.properties.data) return colorScale(d.properties.data[selectedYear]);
                             else return "#b3b3b3";
@@ -171,9 +172,9 @@ async function draw() {
                     .on('mouseleave', function(event, datum){
                         tooltip.style('display', 'none');
                     }),
-                (exit) => exit//.attr('fill', 'green')
+                (exit) => { console.log('exit');return exit
                     .transition(exitTransition)
-                    .remove()
+                    .remove()}
             )
             .transition(updateTransition)
             .attr('d', pathGenerator)
@@ -193,7 +194,7 @@ async function draw() {
                     return "#b3b3b3";
                 } 
             })
-            .attr('stroke', 'black') 
+            .attr('stroke', 'black')
             
         // Legend: All colors rectangles 
         legendData.selectAll('rect')
